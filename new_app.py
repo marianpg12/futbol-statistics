@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import numpy as np
-
+from PIL import Image
 
 # Configuración básica de Streamlit
 st.set_page_config(page_title="Football Dashboard", page_icon="⚽", layout="wide")
@@ -41,7 +41,6 @@ def categorize_results(dataframe, final_resultado):
         except ValueError:
             continue
     return wins, draws, losses
-
 
 # Título y subtítulo
 st.markdown(
@@ -95,7 +94,7 @@ else:
         # Mostrar estadísticas de resultados
         if 'Final Result' in fixture.columns:
             st.subheader("Estadísticas de Resultados")
-            wins, draws, losses = categorize_results(fixture, 'Final Result')
+            wins, draws, losses = categorize_results(fixture, 'Final Result') # planilla + columna de argumento
             st.write(f"Partidos ganados: {wins}")
             st.write(f"Partidos empatados: {draws}")
             st.write(f"Partidos perdidos: {losses}")
@@ -119,6 +118,33 @@ else:
         fig, ax = plt.subplots()
         sns.barplot(x='Name', y='Mins', data=jugador, ax=ax)
         plt.xticks(rotation=90)
+        st.pyplot(fig)
+    
+        # Radar chart
+        # Selecciona un jugador para mostrar su gráfico
+        selected_player = st.selectbox("Selecciona un jugador", jugador['Name'])
+
+        # Filtra los datos para el jugador seleccionado
+        player_data = jugador[jugador['Name'] == selected_player].drop('Name', axis=1).values.flatten()
+        # Ajusta los valores para que estén en el rango de 0 a 100 minutos
+        player_data = np.clip(player_data, 0, 100)
+        # Preparar los datos para el radar chart
+        categories = jugador.columns[1:]
+        pi = int(3.14)
+        N = len(categories)
+        values = player_data.tolist()
+        values += values[:1]  # Para cerrar el gráfico
+
+        angles = [n / float(N) * 2 * pi for n in range(N)]
+        angles += angles[:1]
+
+        # Crear el radar chart
+        fig, ax = plt.subplots(subplot_kw=dict(polar=True))
+        ax.fill(angles, values, color='b', alpha=0.25)
+        ax.plot(angles, values, color='b', linewidth=2)
+        ax.set_xticks(angles[:-1])
+        ax.set_xticklabels(categories)
+        ax.set_title(f"Minutos Jugados por {selected_player}")
         st.pyplot(fig)
 
 st.text("Dataset >> ")
