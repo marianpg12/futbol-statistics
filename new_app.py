@@ -119,7 +119,7 @@ else:
         sns.barplot(x='Name', y='Mins', data=jugador, ax=ax)
         plt.xticks(rotation=90)
         st.pyplot(fig)
-<<<<<<< HEAD
+
     
         # Radar chart
         # Selecciona un jugador para mostrar su gráfico
@@ -140,10 +140,9 @@ else:
         angles += angles[:1]
 
         # Crear el radar chart
-=======
-    # Radar chart
+        # Radar chart
         st.subheader("Minutos Jugados por Partido")
->>>>>>> 39da67847226b8f96ba0b8e0a4dc81287dd8495f
+
         fig, ax = plt.subplots(subplot_kw=dict(polar=True))
         ax.fill(angles, values, color='b', alpha=0.25)
         ax.plot(angles, values, color='b', linewidth=2)
@@ -172,4 +171,4 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True,
-)
+    )
