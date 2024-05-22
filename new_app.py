@@ -142,7 +142,7 @@ else:
         st.subheader("Minutos Jugados por Partido")
 
 
-        st.subheader("Minutos Jugados por Partido")
+        
 
         fig, ax = plt.subplots(subplot_kw=dict(polar=True))
         ax.fill(angles, values, color='b', alpha=0.25)
