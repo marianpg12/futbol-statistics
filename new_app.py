@@ -5,7 +5,6 @@ import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import plotly.express as px
 import numpy as np
 from PIL import Image
 
@@ -24,7 +23,6 @@ try:
     jugador = load_data('data/tpsplayer.csv', delimiter=';', encoding='latin1')
 except FileNotFoundError as e:
     st.error(f"Error cargando el archivo: {e}")
-
 
 # Función para categorizar resultados
 def categorize_results(dataframe, final_resultado):
@@ -71,7 +69,7 @@ st.text("Dataset >> ")
 option = st.sidebar.selectbox(
     "Selecciona una opción:",
     ("Resultados de Partido", "Plantel", "Minutos Jugados")
-    )
+)
 
 if st.sidebar.button("Trayectoria"):
     st.header("Trayectoria")
@@ -113,7 +111,7 @@ else:
         st.header("Minutos Jugados por Jugador")
         st.dataframe(jugador)
     
-    # Gráfico de minutos jugados por jugador
+        # Gráfico de minutos jugados por jugador
         st.subheader("Gráfico de Minutos Jugados por Jugador")
         fig, ax = plt.subplots()
         sns.barplot(x='Name', y='Mins', data=jugador, ax=ax)
@@ -130,16 +128,14 @@ else:
         player_data = np.clip(player_data, 0, 100)
         # Preparar los datos para el radar chart
         categories = jugador.columns[1:]
-        pi = int(3.14)
         N = len(categories)
         values = player_data.tolist()
         values += values[:1]  # Para cerrar el gráfico
 
-        angles = [n / float(N) * 2 * pi for n in range(N)]
+        angles = [n / float(N) * 2 * np.pi for n in range(N)]
         angles += angles[:1]
 
         # Crear el radar chart
-        # Radar chart
         st.subheader("Minutos Jugados por Partido")
         fig, ax = plt.subplots(subplot_kw=dict(polar=True))
         ax.fill(angles, values, color='b', alpha=0.25)
@@ -150,11 +146,6 @@ else:
         st.pyplot(fig)
 
 st.text("Dataset >> ")
-
-#dataset = pd.read_csv('data/fm2023.csv')
-pd.set_option("styler.render.max_elements", 828296)
-#st.dataframe(dataset, height=400)  # height para el scroll vertical
-
 
 # Estilo de la página
 st.markdown(
