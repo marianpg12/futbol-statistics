@@ -184,12 +184,13 @@ else:
             st.write(f"Partidos empatados: {draws}")
             st.write(f"Partidos perdidos: {losses}")
 
-            # Gráfico de resultados
             st.subheader("Gráfico de Resultados")
-            fig, ax = plt.subplots()
-            ax.pie([wins, draws, losses], labels=['Ganados', 'Empatados', 'Perdidos'], autopct='%1.1f%%', startangle=90)
-            ax.axis('equal')
-            st.pyplot(fig)
+            labels = ['Ganados', 'Empatados', 'Perdidos']
+            values = [wins, draws, losses]
+
+            # Crear el gráfico de pastel
+            fig1 = go.Figure(data=[go.Pie(labels=labels, values=values)])
+            st.plotly_chart(fig1)
 
     elif option == "Squad":
         st.header("Squad - TPS U-23")
