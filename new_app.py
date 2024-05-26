@@ -6,7 +6,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import plotly.graph_objects as go
 from PIL import Image
+from streamlit import components
 
 # Configuración básica de Streamlit
 st.set_page_config(page_title="Football Dashboard", page_icon="⚽", layout="wide")
@@ -18,9 +20,10 @@ def load_data(file_path, delimiter=';', encoding='utf-8'):
 
 # Cargar archivos CSV
 try:
-    fixture = load_data('data/tpsresults.csv', delimiter=';', encoding='latin1')
-    equipo = load_data('data/tpsteam.csv', delimiter=';', encoding='latin1')
-    jugador = load_data('data/tpsplayer.csv', delimiter=';', encoding='latin1')
+    fixture = load_data('data/tps/tpsresults.csv', delimiter=',', encoding='latin1')
+    equipo = load_data('data/tps/tpsteam.csv', delimiter=',', encoding='latin1')
+    jugador = load_data('data/tps/tpsplayer.csv', delimiter=';', encoding='latin1')
+    profile = load_data('data/tps/profile.csv', delimiter=',', encoding='latin1')
 except FileNotFoundError as e:
     st.error(f"Error cargando el archivo: {e}")
 
@@ -48,12 +51,12 @@ st.markdown(
         font-size:50px;
         font-weight:bold;
         text-align:center;
-        color:#4CAF50;
+        color:#0000FF;
     }
     .sub-title {
         font-size:30px;
         text-align:center;
-        color:#2E7D32;
+        color:#0000FF;
     }
     </style>
     """,
@@ -61,31 +64,115 @@ st.markdown(
 )
 
 st.markdown('<h1 class="main-title">Mariano Galeano</h1>', unsafe_allow_html=True)
-st.markdown('<h2 class="sub-title">TPS U.23 - Season 2022</h2>', unsafe_allow_html=True)
-st.write("Fecha actual...", datetime.date.today())
+st.markdown('<h2 class="sub-title">Season 2022/2023</h2>', unsafe_allow_html=True)
 
-st.text("Dataset >> ")
+
 
 option = st.sidebar.selectbox(
-    "Selecciona una opción:",
-    ("Resultados de Partido", "Plantel", "Minutos Jugados")
+    "2022 - TPS Turku",
+    ("Games played", "Squad", "Player statistics")
 )
 
-if st.sidebar.button("Trayectoria"):
-    st.header("Trayectoria")
-    st.markdown("""
-    ### Tu Nombre
-    **Perfil**:
-    - Entrenador de futbolistas profesionales.
-    - Experiencia en diferentes paises
+if st.sidebar.button("Career"):
+    
+    
+    # Crear las columnas para el radar chart y datos personales
+    col1, col2 = st.columns([2, 1])
+    
+    # Columna izquierda para el radar chart
+    with col1:
+        # Leer el dataset
+        dataset = pd.read_csv('data/tps/profile.csv', delimiter=",", encoding='utf-8')
+        
+        if 'Name' in dataset.columns:
+            data = dataset[dataset['Name'] == 'Mariano Galeano']
+            data = data.iloc[:, 1:]
+             
+            # Obtener los nombres de los atributos y los valores
+            atributos = list(data.columns)
+            values = data.values.flatten().tolist()
+            values += values[:1]
+            atributos += [atributos[0]]
+            
+            # Crear el Radar Chart
+            fig = go.Figure(data=go.Scatterpolar(r=values, theta=atributos, fill='toself', text=atributos))
+            
+            # Personalizar el diseño del gráfico
+            fig.update_layout(title='Perfil', polar=dict(radialaxis=dict(visible=True, range=[0, 20])))
+            
+            # Mostrar el gráfico en Streamlit
+            st.plotly_chart(fig)
+    
+    # Columna derecha para los datos personales
+    with col2:
+        st.markdown("""
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+                                                                                
+        **Argentina**<br>
+        Atfa Pro<br>
+        H: 1.87<br>
+        W: 85 kg<br>                        
+        Age: 41<br>
+        """, unsafe_allow_html=True)
 
-    **Trayectoria**:
-    - Club A (20XX - 20XX): Descripción de tus responsabilidades y logros.
-    - Club B (20XX - 20XX): Descripción de tus responsabilidades y logros.
-    - Certificaciones y cursos relevantes.
+    # Sección para la trayectoria de clubes
+    st.markdown("""
+    ### Trayectoria de Clubes
+    #### 2022 Turun Palloseura- TPS Turku
+    - Head Coach. Reserve team – U23
+    - Sports Director: Mika Laurikainen. Contact: mika.laurikainen@tps.fi
+    - Games: 22. Win 10 – Draw 5 – Loses 7. Average: 1.64 
+    - Turku, Finland.
+    
+    #### 2021 Oulun Työväen Palloilijat - OTP Oulu
+    - Head coach. First team
+    - Games: 20. Win 9 – Draw 4 – Loses 7. Average: 1.55 
+    - Top 50 – Best Argentinean coaches in foreign countries.
+    - Oulu, Finland.
+    
+    #### 2018-19 Chongqing Dangdai Lifan FC.
+    - Head coach. U-17
+    - Champion League Chongqing regional 2018.
+    - Chongqing, China.
+    
+    #### 2017 Maradona International Brand
+    - Head coach. Youth team. Football Clinics.
+    - Chongqing, China.
+    
+    #### 2016 UTC Cajamarca. Reserve Team
+    - Head Coach: Pepo Salas
+    - Assistant coach.
+    - Cajamarca, Perú
+    
+    #### 2015 Club Deportivo Cuenca. First Team.
+    - Head Coach: Alex Aguinaga
     """)
+
+    # Sección para el porcentaje de puntos
+    st.markdown("### Porcentaje de Puntos")
+    
+    # Crear un gráfico de barras
+    colors = ['lightslategray'] * 5
+    colors[2] = 'yellow'
+    
+    fig1 = go.Figure(data=[go.Bar(
+        x=['Platense', 'Deportivo Cuenca', 'Chongqing Dangdai', 'OTP Oulu', 'TPS Turku'],
+        y=[45, 53, 70, 63, 58],
+        marker_color=colors
+    )])
+    
+    fig1.update_layout(title_text='% Porcentaje de puntos')
+    
+    # Mostrar el gráfico de barras en Streamlit
+    st.plotly_chart(fig1)
+
+
 else:
-    if option == "Resultados de Partido":
+    if option == "Games played":
         st.header("Schedule | Resultados de Partido")
         st.dataframe(fixture)
         
@@ -104,11 +191,11 @@ else:
             ax.axis('equal')
             st.pyplot(fig)
 
-    elif option == "Plantel":
-        st.header("Plantel - TPS U-23 Season 2023")
+    elif option == "Squad":
+        st.header("Squad - TPS U-23")
         st.dataframe(equipo)
-    elif option == "Minutos Jugados":
-        st.header("Minutos Jugados por Jugador")
+    elif option == "Player statistics":
+        st.header("Mins played by player")
         st.dataframe(jugador)
     
         # Gráfico de minutos jugados por jugador
@@ -118,9 +205,9 @@ else:
         plt.xticks(rotation=90)
         st.pyplot(fig)
 
+
     
         # Radar chart
-        # Selecciona un jugador para mostrar su gráfico
         selected_player = st.selectbox("Selecciona un jugador", jugador['Name'])
 
         # Filtra los datos para el jugador seleccionado
@@ -144,6 +231,8 @@ else:
 
         
 
+       # Crear el radar chart
+        st.subheader("Minutos Jugados por Partido")
         fig, ax = plt.subplots(subplot_kw=dict(polar=True))
         ax.fill(angles, values, color='b', alpha=0.25)
         ax.plot(angles, values, color='b', linewidth=2)
@@ -152,7 +241,10 @@ else:
         ax.set_title(f"Minutos Jugados por {selected_player}")
         st.pyplot(fig)
 
-st.text("Dataset >> ")
+if st.sidebar.button("Blog"):
+    st.write('<meta http-equiv="refresh" content="0;URL=https://marianogaleano7.wordpress.com/blog/" />', unsafe_allow_html=True) 
+
+
 
 # Estilo de la página
 st.markdown(

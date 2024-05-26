@@ -1,21 +1,9 @@
 #!/bin/bash
 
-# Asegúrate de estar en la rama principal
-git checkout main
-
-# Actualiza el repositorio local con los cambios del repositorio remoto
-git pull origin main
-
-# Verifica el estado de tus cambios
+git pull origin main --no-rebase
 git status
-
-# Agrega todos los archivos modificados al área de preparación
 git add .
-
-# Realiza un commit con un mensaje descriptivo
-git commit -m "Actualizar aplicación con nuevas modificaciones"
-
-# Empuja tus cambios al repositorio remoto en GitHub
+git commit -m "Actualizando..."
 git push origin main
 
 # Mensaje de confirmación
